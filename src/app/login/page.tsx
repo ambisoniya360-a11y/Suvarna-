@@ -1,53 +1,82 @@
-import { Metadata } from "next"
-import { LoginForm } from "@/components/auth/login-form"
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import LoginForm from '@/components/auth/login-form';
 
 export const metadata: Metadata = {
-  title: "Login - SuvarnaLoan ERP",
-  description: "Login to your SuvarnaLoan ERP account",
-}
+  title: 'Login',
+  description: 'Sign in to SuvarnaLoan ERP — your premium gold loan management platform.',
+  robots: { index: false, follow: false },
+};
 
 export default function LoginPage() {
   return (
-    <div className="container relative min-h-screen flex-col items-center justify-center grid lg:max-w-none lg:grid-cols-2 lg:px-0">
-      <div className="relative hidden h-full flex-col bg-muted p-10 text-white dark:border-r lg:flex">
-        <div className="absolute inset-0 bg-zinc-900" />
-        <div className="relative z-20 flex items-center text-lg font-medium">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="mr-2 h-6 w-6"
-          >
-            <path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3" />
-          </svg>
-          SuvarnaLoan ERP
-        </div>
-        <div className="relative z-20 mt-auto">
-          <blockquote className="space-y-2">
-            <p className="text-lg">
-              &ldquo;This ERP has revolutionized how we manage gold loans and our customer relationships. Highly recommended for any jewellery business.&rdquo;
-            </p>
-            <footer className="text-sm">Sofia Davis, Shop Owner</footer>
-          </blockquote>
-        </div>
+    <div className="login-page">
+      {/* Background effects */}
+      <div className="login-bg">
+        <div className="login-bg-orb login-bg-orb-1" />
+        <div className="login-bg-orb login-bg-orb-2" />
+        <div className="login-grid" />
       </div>
-      <div className="lg:p-8">
-        <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
-          <div className="flex flex-col space-y-2 text-center">
-            <h1 className="text-2xl font-semibold tracking-tight">
-              Welcome back
+
+      {/* Login Container */}
+      <div className="login-container animate-fade-in-up">
+        {/* Logo */}
+        <div className="login-logo">
+          <div className="login-logo-icon">
+            <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+              <polygon
+                points="18,2 34,10 34,26 18,34 2,26 2,10"
+                stroke="#D4AF37"
+                strokeWidth="1.5"
+                fill="rgba(212,175,55,0.08)"
+              />
+              <polygon
+                points="18,8 28,13 28,23 18,28 8,23 8,13"
+                fill="rgba(212,175,55,0.15)"
+                stroke="#D4AF37"
+                strokeWidth="1"
+              />
+              <circle cx="18" cy="18" r="4" fill="#D4AF37" />
+            </svg>
+          </div>
+          <div>
+            <h1 className="login-brand">
+              Suvarna<span className="text-gradient-gold">Loan</span>
             </h1>
-            <p className="text-sm text-muted-foreground">
-              Enter your email below to login to your account
+            <p className="login-tagline">Transforming Gold Into Trust.</p>
+          </div>
+        </div>
+
+        {/* Card */}
+        <div className="login-card glass-panel">
+          <div className="login-card-header">
+            <h2>Welcome back</h2>
+            <p className="text-muted">Sign in to your ERP dashboard</p>
+          </div>
+
+          <LoginForm />
+
+          <div className="login-card-footer">
+            <p className="text-muted" style={{ fontSize: '0.8rem', textAlign: 'center' }}>
+              🔒 Secured with 256-bit AES encryption &amp; Supabase RLS
             </p>
           </div>
-          <LoginForm />
         </div>
+
+        <p className="login-help" style={{ textAlign: 'center', lineHeight: 1.6 }}>
+          New to SuvarnaLoan?{' '}
+          <Link href="/signup" style={{ color: 'var(--gold-primary)', fontWeight: 600 }}>
+            Sign Up Now
+          </Link>
+          <br />
+          Need help?{' '}
+          <a href="mailto:support@suvarnaloan.com" style={{ color: 'var(--text-tertiary)', fontSize: '0.8125rem' }}>
+            Contact Support
+          </a>
+        </p>
       </div>
+
+
     </div>
-  )
+  );
 }

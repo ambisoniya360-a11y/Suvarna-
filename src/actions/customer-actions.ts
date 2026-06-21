@@ -1,80 +1,142 @@
-"use server"
+'use server';
 
-import { createClient } from "@/lib/supabase/server"
-import { revalidatePath } from "next/cache"
+import { revalidatePath } from 'next/cache';
+import { createClient } from '@/lib/supabase/server';
+import type { Customer, CustomerFormData, ApiResponse, FilterState } from '@/types';
 
-export async function createCustomer(formData: FormData) {
-  const supabase = await createClient()
+async function getShopId(): Promise<string | null> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
 
-  // For real implementation, you would extract the user's shop_id from the session or user metadata
-  // Since we don't have a guaranteed shop_id right now in our dummy setup, we will query the first shop
-  // Note: in a real production environment, shop_id must come from the authenticated user.
-  
-  // 1. Get current user
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
-  if (authError || !user) {
-    return { error: "Not authenticated" }
-  }
+  const { data } = await supabase
+    .from('users')
+    .select('shop_id')
+    .eq('id', user.id)
+    .single();
 
-  // 2. Find user's shop_id
-  const { data: userData, error: userError } = await supabase
-    .from("users")
-    .select("shop_id")
-    .eq("id", user.id)
-    .single()
-  
-  if (userError || !userData?.shop_id) {
-    // If no user record exists, return an error. Or for testing, we can fall back.
-    // return { error: "User is not assigned to any shop." }
-  }
-
-  const shopId = userData?.shop_id
-
-  const fullName = formData.get("fullName") as string
-  const mobileNumber = formData.get("mobileNumber") as string
-  const aadhaarNumber = formData.get("aadhaarNumber") as string
-  const panNumber = formData.get("panNumber") as string
-  const address = formData.get("address") as string
-
-  if (!fullName || !mobileNumber) {
-    return { error: "Full Name and Mobile Number are required" }
-  }
-
-  const { data, error } = await supabase
-    .from("customers")
-    .insert([
-      {
-        shop_id: shopId, // This might be undefined if not set up, which will violate NOT NULL constraint.
-        full_name: fullName,
-        mobile_number: mobileNumber,
-        aadhaar_number: aadhaarNumber,
-        pan_number: panNumber,
-        address: address,
-        status: "Active",
-      },
-    ])
-    .select()
-
-  if (error) {
-    console.error("Error creating customer:", error)
-    return { error: error.message }
-  }
-
-  revalidatePath("/dashboard/customers")
-  return { data }
+  return data?.shop_id ?? null;
 }
 
-export async function getCustomers() {
-  const supabase = await createClient()
-  const { data, error } = await supabase
-    .from("customers")
-    .select("*")
-    .order("created_at", { ascending: false })
+export async function getCustomers(
+  filters: Partial<FilterState> = {},
+  page = 1,
+  pageSize = 20
+): Promise<ApiResponse<Customer[]>> {
+  const supabase = await createClient();
+  const shopId = await getShopId();
+  if (!shopId) return { error: 'Unauthorized' };
 
-  if (error) {
-    console.error("Error fetching customers:", error)
-    return []
+  let query = supabase
+    .from('customers')
+    .select('*', { count: 'exact' })
+    .eq('shop_id', shopId)
+    .order('created_at', { ascending: false })
+    .range((page - 1) * pageSize, page * pageSize - 1);
+
+  if (filters.search) {
+    query = query.or(
+      `full_name.ilike.%${filters.search}%,mobile_number.ilike.%${filters.search}%,aadhaar_number.ilike.%${filters.search}%`
+    );
   }
 
-  return data
+  if (filters.status) {
+    query = query.eq('status', filters.status);
+  }
+
+  if (filters.branch_id) {
+    query = query.eq('branch_id', filters.branch_id);
+  }
+
+  const { data, error, count } = await query;
+
+  if (error) return { error: error.message };
+  return { data: data ?? [], count: count ?? 0 };
+}
+
+export async function getCustomerById(id: string): Promise<ApiResponse<Customer>> {
+  const supabase = await createClient();
+  const shopId = await getShopId();
+  if (!shopId) return { error: 'Unauthorized' };
+
+  const { data, error } = await supabase
+    .from('customers')
+    .select('*')
+    .eq('id', id)
+    .eq('shop_id', shopId)
+    .single();
+
+  if (error) return { error: error.message };
+  return { data };
+}
+
+export async function createCustomer(
+  formData: CustomerFormData
+): Promise<ApiResponse<Customer>> {
+  const supabase = await createClient();
+  const shopId = await getShopId();
+  if (!shopId) return { error: 'Unauthorized' };
+
+  const { data, error } = await supabase
+    .from('customers')
+    .insert([{ ...formData, shop_id: shopId }])
+    .select()
+    .single();
+
+  if (error) return { error: error.message };
+  revalidatePath('/dashboard/customers');
+  return { data, message: 'Customer created successfully' };
+}
+
+export async function updateCustomer(
+  id: string,
+  formData: Partial<CustomerFormData>
+): Promise<ApiResponse<Customer>> {
+  const supabase = await createClient();
+  const shopId = await getShopId();
+  if (!shopId) return { error: 'Unauthorized' };
+
+  const { data, error } = await supabase
+    .from('customers')
+    .update(formData)
+    .eq('id', id)
+    .eq('shop_id', shopId)
+    .select()
+    .single();
+
+  if (error) return { error: error.message };
+  revalidatePath('/dashboard/customers');
+  revalidatePath(`/dashboard/customers/${id}`);
+  return { data, message: 'Customer updated successfully' };
+}
+
+export async function deleteCustomer(id: string): Promise<ApiResponse<null>> {
+  const supabase = await createClient();
+  const shopId = await getShopId();
+  if (!shopId) return { error: 'Unauthorized' };
+
+  const { error } = await supabase
+    .from('customers')
+    .delete()
+    .eq('id', id)
+    .eq('shop_id', shopId);
+
+  if (error) return { error: error.message };
+  revalidatePath('/dashboard/customers');
+  return { data: null, message: 'Customer deleted successfully' };
+}
+
+export async function getCustomerStats(customerId: string) {
+  const supabase = await createClient();
+
+  const { data: loans } = await supabase
+    .from('loans')
+    .select('id, loan_amount, status')
+    .eq('customer_id', customerId);
+
+  const totalLoans = loans?.length ?? 0;
+  const activeLoans = loans?.filter((l: any) => l.status === 'Active').length ?? 0;
+  const totalBorrowed = loans?.reduce((sum: number, l: any) => sum + (l.loan_amount || 0), 0) ?? 0;
+
+  return { totalLoans, activeLoans, totalBorrowed };
 }

@@ -1,76 +1,108 @@
-"use server"
+'use server';
 
-import { createClient } from "@/lib/supabase/server"
-import { revalidatePath } from "next/cache"
+import { revalidatePath } from 'next/cache';
+import { createClient } from '@/lib/supabase/server';
+import type { Payment, PaymentFormData, ApiResponse } from '@/types';
+import { generateReceiptNumber } from '@/lib/utils';
 
-export async function createPayment(formData: FormData) {
-  const supabase = await createClient()
-
-  // 1. Get current user
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
-  if (authError || !user) {
-    return { error: "Not authenticated" }
-  }
-
-  const loanId = formData.get("loanId") as string
-  const paymentType = formData.get("paymentType") as string
-  const amount = parseFloat(formData.get("amount") as string)
-  const paymentMethod = formData.get("paymentMethod") as string
-  const notes = formData.get("notes") as string
-
-  if (!loanId || !paymentType || !amount || !paymentMethod) {
-    return { error: "Missing required fields" }
-  }
-
-  const { data, error } = await supabase
-    .from("payments")
-    .insert([
-      {
-        loan_id: loanId,
-        payment_type: paymentType,
-        amount: amount,
-        payment_method: paymentMethod,
-        notes: notes,
-      },
-    ])
-    .select()
-
-  if (error) {
-    console.error("Error creating payment:", error)
-    return { error: error.message }
-  }
-
-  // If Full Settlement, we should probably update the loan status to 'Closed'
-  if (paymentType === "Full Settlement") {
-    await supabase.from("loans").update({ status: "Closed" }).eq("id", loanId)
-  }
-
-  revalidatePath("/dashboard/payments")
-  revalidatePath("/dashboard/loans")
-  return { data }
+async function getShopId(): Promise<string | null> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+  const { data } = await supabase.from('users').select('shop_id').eq('id', user.id).single();
+  return data?.shop_id ?? null;
 }
 
-export async function getPayments() {
-  const supabase = await createClient()
-  
-  const { data, error } = await supabase
-    .from("payments")
-    .select(`
-      *,
-      loans ( 
-        loan_number,
-        customers ( 
-          full_name, mobile_number, address,
-          shops ( shop_name, owner_name, mobile )
-        )
-      )
-    `)
-    .order("created_at", { ascending: false })
+export async function recordPayment(
+  formData: PaymentFormData
+): Promise<ApiResponse<Payment>> {
+  const supabase = await createClient();
+  const shopId = await getShopId();
+  if (!shopId) return { error: 'Unauthorized' };
 
-  if (error) {
-    console.error("Error fetching payments:", error)
-    return []
+  const receiptNumber = generateReceiptNumber();
+
+  const { data, error } = await supabase
+    .from('payments')
+    .insert([{
+      ...formData,
+      shop_id: shopId,
+      receipt_number: receiptNumber,
+    }])
+    .select()
+    .single();
+
+  if (error) return { error: error.message };
+
+  // If full settlement, close the loan
+  if (formData.payment_type === 'Full Settlement') {
+    await supabase
+      .from('loans')
+      .update({ status: 'Closed', closed_date: new Date().toISOString().split('T')[0] })
+      .eq('id', formData.loan_id);
   }
 
-  return data
+  revalidatePath('/dashboard/payments');
+  revalidatePath(`/dashboard/loans/${formData.loan_id}`);
+  revalidatePath('/dashboard/overview');
+  return { data: data as Payment, message: `Payment recorded. Receipt: ${receiptNumber}` };
+}
+
+export async function getPaymentsByLoan(loanId: string): Promise<ApiResponse<Payment[]>> {
+  const supabase = await createClient();
+  const shopId = await getShopId();
+  if (!shopId) return { error: 'Unauthorized' };
+
+  const { data, error } = await supabase
+    .from('payments')
+    .select('*')
+    .eq('loan_id', loanId)
+    .eq('shop_id', shopId)
+    .order('payment_date', { ascending: false });
+
+  if (error) return { error: error.message };
+  return { data: data as Payment[] ?? [] };
+}
+
+export async function getAllPayments(
+  page = 1,
+  pageSize = 20,
+  filters: { date_from?: string; date_to?: string; payment_type?: string } = {}
+): Promise<ApiResponse<Payment[]>> {
+  const supabase = await createClient();
+  const shopId = await getShopId();
+  if (!shopId) return { error: 'Unauthorized' };
+
+  let query = supabase
+    .from('payments')
+    .select(`
+      *,
+      loans(loan_number, customers(full_name, mobile_number))
+    `, { count: 'exact' })
+    .eq('shop_id', shopId)
+    .order('payment_date', { ascending: false })
+    .range((page - 1) * pageSize, page * pageSize - 1);
+
+  if (filters.payment_type) query = query.eq('payment_type', filters.payment_type);
+  if (filters.date_from) query = query.gte('payment_date', filters.date_from);
+  if (filters.date_to) query = query.lte('payment_date', filters.date_to);
+
+  const { data, error, count } = await query;
+  if (error) return { error: error.message };
+  return { data: data as Payment[] ?? [], count: count ?? 0 };
+}
+
+export async function getTodayCollections(): Promise<number> {
+  const supabase = await createClient();
+  const shopId = await getShopId();
+  if (!shopId) return 0;
+
+  const today = new Date().toISOString().split('T')[0];
+  const { data } = await supabase
+    .from('payments')
+    .select('amount')
+    .eq('shop_id', shopId)
+    .eq('payment_date', today);
+
+  return data?.reduce((sum: number, p: any) => sum + p.amount, 0) ?? 0;
 }
