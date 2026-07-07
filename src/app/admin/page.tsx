@@ -16,7 +16,8 @@ import {
   rejectRequestAction,
   extendSubscriptionAction,
   changePlanAction,
-  toggleShopStatusAction
+  toggleShopStatusAction,
+  createManualTenantAction
 } from './actions';
 
 export default function SuperAdminConsole() {
@@ -183,31 +184,29 @@ export default function SuperAdminConsole() {
       return;
     }
 
-    toast.loading('Creating onboarding request...');
+    toast.loading('Onboarding shop owner and creating database records...');
     try {
-      const supabase = createClient();
-      const { data, error } = await supabase
-        .from('registration_requests')
-        .insert({
-          shop_name: newShopName,
-          owner_name: newOwnerName,
-          email: newEmail,
-          mobile: newMobile,
-          plan: newPlan,
-          days: newDays,
-          status: 'Pending'
-        })
-        .select()
-        .single();
-
+      const res = await createManualTenantAction(
+        newShopName,
+        newOwnerName,
+        newEmail,
+        newMobile,
+        newPlan,
+        newDays
+      );
+      
       toast.dismiss();
-      if (error || !data) {
-        toast.error(error?.message || 'Failed to submit registration request.');
-        return;
+      if (res.success && res.credentials) {
+        // Refresh active shops list from live DB
+        const active = await fetchActiveShops();
+        setShops(active);
+        
+        // Show generated credentials modal
+        setGeneratedCreds(res.credentials);
+        toast.success('Shop owner created successfully!');
+      } else {
+        toast.error(res.error || 'Failed to create shop owner.');
       }
-
-      toast.success('Registration request added! Running automatic approval...');
-      await handleApproveRequest(data.id);
     } catch (err: any) {
       toast.dismiss();
       toast.error(err.message || 'Error occurred during manual onboarding.');
