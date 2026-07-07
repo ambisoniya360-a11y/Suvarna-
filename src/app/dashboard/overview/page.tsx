@@ -82,14 +82,13 @@ export default async function OverviewPage() {
 
   const { data: profile } = await supabase
     .from('users')
-    .select('shop_id, name')
+    .select('shop_id, name, role')
     .eq('id', user.id)
     .single();
 
-  console.log('--- OverviewPage debug ---');
-  console.log('User ID:', user?.id);
-  console.log('User Email:', user?.email);
-  console.log('Profile Data:', profile);
+  if (profile?.role === 'Super Admin') {
+    redirect('/admin');
+  }
 
   if (!profile?.shop_id) {
     return (
