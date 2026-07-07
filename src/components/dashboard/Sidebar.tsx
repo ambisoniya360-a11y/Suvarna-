@@ -91,7 +91,10 @@ export default function Sidebar({ userRole, userName = 'User', shopName = 'Suvar
 
       {/* Navigation */}
       <nav className="sidebar-nav" role="navigation" aria-label="Main navigation">
-        {navItems.map(({ href, label, icon: Icon }) => (
+        {(userRole === 'Super Admin' 
+          ? [{ href: '/admin', label: 'Admin Console', icon: Shield }] 
+          : navItems
+        ).map(({ href, label, icon: Icon }) => (
           <Link
             key={href}
             href={href}
@@ -107,23 +110,6 @@ export default function Sidebar({ userRole, userName = 'User', shopName = 'Suvar
             )}
           </Link>
         ))}
-
-        {/* Admin link (Super Admin only) */}
-        {userRole === 'Super Admin' && (
-          <>
-            <div className="nav-divider" />
-            <Link
-              href="/admin"
-              id="nav-admin"
-              className={cn('nav-item', isActive('/admin') && 'active')}
-              onClick={() => setMobileOpen(false)}
-              title={collapsed ? 'Admin Panel' : undefined}
-            >
-              <Shield size={18} className="nav-icon" />
-              {!collapsed && <span className="nav-label">Admin Panel</span>}
-            </Link>
-          </>
-        )}
       </nav>
 
       {/* Footer */}
