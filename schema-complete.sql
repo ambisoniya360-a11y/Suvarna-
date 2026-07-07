@@ -512,53 +512,18 @@ CREATE TABLE IF NOT EXISTS public.subscription_payments (
 -- ── 4. Drop problematic existing RLS policies ────────────────────
 
 -- users
-DROP POLICY IF EXISTS "Users can view their own profile" ON public.users;
-DROP POLICY IF EXISTS "Users can view users in same shop" ON public.users;
-DROP POLICY IF EXISTS "Shop owners can manage their users" ON public.users;
-DROP POLICY IF EXISTS "Only Super Admins can manage users" ON public.users;
-DROP POLICY IF EXISTS "Super Admins can manage all users" ON public.users;
-DROP POLICY IF EXISTS "Super Admins can manage all profiles" ON public.users;
-
-
 -- shops
-DROP POLICY IF EXISTS "Users can view their own shop" ON public.shops;
-DROP POLICY IF EXISTS "Super Admins can manage all shops" ON public.shops;
-
 -- customers
-DROP POLICY IF EXISTS "Shop users can access customers" ON public.customers;
-
 -- gold_items
-DROP POLICY IF EXISTS "Shop users can access gold items" ON public.gold_items;
-
 -- loans
-DROP POLICY IF EXISTS "Shop users can access loans" ON public.loans;
-
 -- payments
-DROP POLICY IF EXISTS "Shop users can access payments" ON public.payments;
-
 -- subscription_payments
-DROP POLICY IF EXISTS "Super Admins can manage subscription payments" ON public.subscription_payments;
-DROP POLICY IF EXISTS "Shop owners can view their payments" ON public.subscription_payments;
-
 -- branches
-DROP POLICY IF EXISTS "Shop users can access branches" ON public.branches;
-
 -- employees
-DROP POLICY IF EXISTS "Shop users can access employees" ON public.employees;
-
 -- documents
-DROP POLICY IF EXISTS "Shop users can access documents" ON public.documents;
-
 -- notifications
-DROP POLICY IF EXISTS "Shop users can access notifications" ON public.notifications;
-
 -- audit_logs
-DROP POLICY IF EXISTS "Shop users can read audit logs" ON public.audit_logs;
-
 -- valuations
-DROP POLICY IF EXISTS "Shop users can access valuations" ON public.valuations;
-
-
 -- ── 5. Re-create RLS Policies using helper functions (0 recursion) ──
 
 -- public.users policies
@@ -766,38 +731,18 @@ $$ LANGUAGE plpgsql SECURITY DEFINER SET row_security = off;
 -- ── 2. Drop existing problematic policies on all tables ──
 
 -- users
-DROP POLICY IF EXISTS "Users can view their own profile" ON public.users;
-DROP POLICY IF EXISTS "Users can view users in same shop" ON public.users;
-DROP POLICY IF EXISTS "Shop owners can manage their users" ON public.users;
-DROP POLICY IF EXISTS "Only Super Admins can manage users" ON public.users;
-DROP POLICY IF EXISTS "Super Admins can manage all profiles" ON public.users;
-
-
 -- shops
-DROP POLICY IF EXISTS "Users can view their own shop" ON public.shops;
-
 -- customers
-DROP POLICY IF EXISTS "Shop users can access customers" ON public.customers;
-
 -- gold_items
-DROP POLICY IF EXISTS "Shop users can access gold items" ON public.gold_items;
-
 -- loans
-DROP POLICY IF EXISTS "Shop users can access loans" ON public.loans;
-
 -- payments
-DROP POLICY IF EXISTS "Shop users can access payments" ON public.payments;
-
 -- subscription_payments
-DROP POLICY IF EXISTS "Super Admins can manage subscription payments" ON public.subscription_payments;
-DROP POLICY IF EXISTS "Shop owners can view their payments" ON public.subscription_payments;
-
-
 -- ── 3. Re-create RLS Policies using helper functions (0 recursion) ──
 
 -- public.users policies
 ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view users in same shop" ON public.users;
 CREATE POLICY "Users can view users in same shop" ON public.users
   FOR SELECT USING (
     shop_id = get_user_shop_id() 
@@ -805,12 +750,14 @@ CREATE POLICY "Users can view users in same shop" ON public.users
     OR id = auth.uid()
   );
 
+DROP POLICY IF EXISTS "Shop owners can manage their users" ON public.users;
 CREATE POLICY "Shop owners can manage their users" ON public.users
   FOR ALL USING (
     shop_id = get_user_shop_id() 
     AND get_user_role() = 'Shop Owner'
   );
 
+DROP POLICY IF EXISTS "Super Admins can manage all users" ON public.users;
 CREATE POLICY "Super Admins can manage all users" ON public.users
   FOR ALL USING (
     get_user_role() = 'Super Admin'
@@ -820,12 +767,14 @@ CREATE POLICY "Super Admins can manage all users" ON public.users
 -- public.shops policies
 ALTER TABLE public.shops ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view their own shop" ON public.shops;
 CREATE POLICY "Users can view their own shop" ON public.shops
   FOR SELECT USING (
     id = get_user_shop_id() 
     OR get_user_role() = 'Super Admin'
   );
 
+DROP POLICY IF EXISTS "Super Admins can manage all shops" ON public.shops;
 CREATE POLICY "Super Admins can manage all shops" ON public.shops
   FOR ALL USING (
     get_user_role() = 'Super Admin'
@@ -835,6 +784,7 @@ CREATE POLICY "Super Admins can manage all shops" ON public.shops
 -- public.customers policies
 ALTER TABLE public.customers ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Shop users can access customers" ON public.customers;
 CREATE POLICY "Shop users can access customers" ON public.customers
   FOR ALL USING (
     shop_id = get_user_shop_id() 
@@ -845,6 +795,7 @@ CREATE POLICY "Shop users can access customers" ON public.customers
 -- public.gold_items policies
 ALTER TABLE public.gold_items ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Shop users can access gold items" ON public.gold_items;
 CREATE POLICY "Shop users can access gold items" ON public.gold_items
   FOR ALL USING (
     customer_id IN (SELECT id FROM public.customers WHERE shop_id = get_user_shop_id())
@@ -855,6 +806,7 @@ CREATE POLICY "Shop users can access gold items" ON public.gold_items
 -- public.loans policies
 ALTER TABLE public.loans ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Shop users can access loans" ON public.loans;
 CREATE POLICY "Shop users can access loans" ON public.loans
   FOR ALL USING (
     customer_id IN (SELECT id FROM public.customers WHERE shop_id = get_user_shop_id())
@@ -865,6 +817,7 @@ CREATE POLICY "Shop users can access loans" ON public.loans
 -- public.payments policies
 ALTER TABLE public.payments ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Shop users can access payments" ON public.payments;
 CREATE POLICY "Shop users can access payments" ON public.payments
   FOR ALL USING (
     loan_id IN (
@@ -879,11 +832,13 @@ CREATE POLICY "Shop users can access payments" ON public.payments
 -- public.subscription_payments policies
 ALTER TABLE public.subscription_payments ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Super Admins can manage subscription payments" ON public.subscription_payments;
 CREATE POLICY "Super Admins can manage subscription payments" ON public.subscription_payments
   FOR ALL USING (
     get_user_role() = 'Super Admin'
   );
 
+DROP POLICY IF EXISTS "Shop owners can view their payments" ON public.subscription_payments;
 CREATE POLICY "Shop owners can view their payments" ON public.subscription_payments
   FOR SELECT USING (
     shop_id = get_user_shop_id()
@@ -996,13 +951,6 @@ VALUES
 ON CONFLICT (id) DO UPDATE SET public = EXCLUDED.public;
 
 -- 2. Drop existing conflicting policies on storage.objects if they exist
-DROP POLICY IF EXISTS "Allow authenticated uploads" ON storage.objects;
-DROP POLICY IF EXISTS "Allow authenticated reads" ON storage.objects;
-DROP POLICY IF EXISTS "Allow public read of photos" ON storage.objects;
-DROP POLICY IF EXISTS "Allow public read of documents" ON storage.objects;
-DROP POLICY IF EXISTS "Allow authenticated updates" ON storage.objects;
-DROP POLICY IF EXISTS "Allow authenticated deletes" ON storage.objects;
-
 -- 3. Create RLS policies for storage.objects
 
 -- Allow logged-in (authenticated) users to upload files to 'documents' and 'photos' buckets
