@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import ThemeToggle from '@/components/ThemeToggle';
 
 const NAV_LINKS = ['Security', 'Workflow', 'Pricing', 'Testimonials'];
 
@@ -37,6 +38,7 @@ export function HomeNavbar() {
       </div>
 
       <div className="home-navbar-actions">
+        <ThemeToggle />
         <Link href="/login" className="btn btn-outline btn-sm" id="nav-login-btn">Sign In</Link>
         <Link href="/signup" className="btn btn-gold btn-sm" id="nav-signup-btn">
           <span>Get Started</span>

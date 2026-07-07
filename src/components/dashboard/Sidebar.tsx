@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { signOut } from '@/app/login/actions';
+import ThemeToggle from '@/components/ThemeToggle';
 
 const navItems = [
   { href: '/dashboard/overview', label: 'Overview', icon: LayoutDashboard },
@@ -114,6 +115,11 @@ export default function Sidebar({ userRole, userName = 'User', shopName = 'Suvar
 
       {/* Footer */}
       <div className="sidebar-footer">
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: collapsed ? 'center' : 'space-between', gap: '0.5rem', marginBottom: '0.25rem', padding: '0 0.5rem' }}>
+          {!collapsed && <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>Appearance</span>}
+          <ThemeToggle />
+        </div>
+
         <div className="sidebar-user">
           <div
             className="avatar-placeholder avatar-sm"
