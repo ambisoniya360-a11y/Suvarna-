@@ -1,7 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Geist+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Geist+Mono:wght@400;500;600&display=swap');
 
 /* ============================================================
-   SUVARNALOAN ERP — LUXURY DESIGN SYSTEM
+   SUVARNALOAN ERP — LUXURY DESIGN SYSTEM (TANISHQ INSPIRED)
    ============================================================ */
 
 @tailwind base;
@@ -11,30 +11,30 @@
 /* ── CSS Variables ──────────────────────────────────────── */
 :root {
   /* Background */
-  --bg-primary: #f8f9fc;
-  --bg-secondary: #ffffff;
-  --bg-tertiary: #f1f3f9;
-  --bg-card: rgba(0, 0, 0, 0.02);
-  --bg-card-hover: rgba(0, 0, 0, 0.04);
-  --bg-elevated: rgba(0, 0, 0, 0.06);
+  --bg-primary: #fcfaf6; /* Warm Ivory Alabaster */
+  --bg-secondary: #ffffff; /* Pure White */
+  --bg-tertiary: #f6f2e9; /* Warm luxury beige */
+  --bg-card: rgba(131, 39, 41, 0.015);
+  --bg-card-hover: rgba(131, 39, 41, 0.035);
+  --bg-elevated: rgba(131, 39, 41, 0.05);
 
-  /* Gold Palette (Contrast adjusted for light bg) */
-  --gold-primary: #b58918;
-  --gold-premium: #d4af37;
-  --gold-accent: #916c0e;
-  --gold-dark: #6e5004;
-  --gold-light: #ffd700;
-  --gold-subtle: rgba(181, 137, 24, 0.06);
-  --gold-glow: rgba(181, 137, 24, 0.12);
-  --gold-glow-strong: rgba(181, 137, 24, 0.22);
-  --gold-border: rgba(181, 137, 24, 0.15);
-  --gold-border-strong: rgba(181, 137, 24, 0.35);
+  /* Gold & Crimson Palette (Tanishq Inspired) */
+  --gold-primary: #b1a16e; /* Tanishq Champagne Gold */
+  --gold-premium: #d4af37; /* Luxury Metallic Gold */
+  --gold-accent: #832729; /* Tanishq Royal Crimson Red */
+  --gold-dark: #5a1a1b; /* Deep Maroon Red */
+  --gold-light: #dccfa2; /* Soft Khaki Gold */
+  --gold-subtle: rgba(177, 161, 110, 0.08);
+  --gold-glow: rgba(177, 161, 110, 0.12);
+  --gold-glow-strong: rgba(177, 161, 110, 0.22);
+  --gold-border: rgba(177, 161, 110, 0.2);
+  --gold-border-strong: rgba(177, 161, 110, 0.4);
 
   /* Text */
-  --text-primary: #111827;
-  --text-secondary: #4b5563;
-  --text-tertiary: #9ca3af;
-  --text-disabled: #d1d5db;
+  --text-primary: #181818; /* Elegant Charcoal Black */
+  --text-secondary: #4b4b4b; /* Deep Grey */
+  --text-tertiary: #7c7c7c; /* Mid Grey */
+  --text-disabled: #b8b8b8;
 
   /* Semantic */
   --color-success: #10b981;
@@ -47,16 +47,16 @@
   --color-info-bg: rgba(59, 130, 246, 0.08);
 
   /* Borders */
-  --border-subtle: rgba(0, 0, 0, 0.05);
-  --border-light: rgba(0, 0, 0, 0.08);
-  --border-medium: rgba(0, 0, 0, 0.15);
+  --border-subtle: rgba(131, 39, 41, 0.05);
+  --border-light: rgba(131, 39, 41, 0.09);
+  --border-medium: rgba(131, 39, 41, 0.16);
 
-  /* Adaptive components (New variables!) */
+  /* Adaptive components */
   --bg-sidebar: #ffffff;
-  --bg-topbar: rgba(255, 255, 255, 0.85);
+  --bg-topbar: rgba(252, 250, 246, 0.85);
   --bg-card-solid: #ffffff;
-  --bg-card-hover-solid: #f9fafb;
-  --bg-footer: #f3f4f6;
+  --bg-card-hover-solid: #fdfcfb;
+  --bg-footer: #f6f2e9;
 
   /* Glass */
   --glass-blur: blur(20px);
@@ -71,6 +71,7 @@
 
   /* Typography */
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
   --font-mono: 'Geist Mono', 'Fira Code', monospace;
 
   /* Radius */
@@ -95,30 +96,30 @@
 
 .dark {
   /* Background */
-  --bg-primary: #050505;
-  --bg-secondary: #0a0a0a;
-  --bg-tertiary: #111111;
+  --bg-primary: #0d0c0b; /* Warm dark brown-charcoal */
+  --bg-secondary: #141211; /* Rich dark chocolate container */
+  --bg-tertiary: #1c1918;
   --bg-card: rgba(255, 255, 255, 0.025);
   --bg-card-hover: rgba(255, 255, 255, 0.045);
   --bg-elevated: rgba(255, 255, 255, 0.06);
 
-  /* Gold Palette */
-  --gold-primary: #D4AF37;
-  --gold-premium: #FFD700;
-  --gold-accent: #C89B3C;
-  --gold-dark: #8B6914;
-  --gold-light: #F5E07C;
-  --gold-subtle: rgba(212, 175, 55, 0.08);
-  --gold-glow: rgba(212, 175, 55, 0.25);
-  --gold-glow-strong: rgba(212, 175, 55, 0.45);
-  --gold-border: rgba(212, 175, 55, 0.2);
-  --gold-border-strong: rgba(212, 175, 55, 0.4);
+  /* Gold & Crimson Palette */
+  --gold-primary: #b1a16e; /* Tanishq Champagne Gold */
+  --gold-premium: #d4af37;
+  --gold-accent: #832729; /* Tanishq Crimson Red */
+  --gold-dark: #5a1a1b;
+  --gold-light: #dccfa2;
+  --gold-subtle: rgba(177, 161, 110, 0.08);
+  --gold-glow: rgba(177, 161, 110, 0.25);
+  --gold-glow-strong: rgba(177, 161, 110, 0.45);
+  --gold-border: rgba(177, 161, 110, 0.2);
+  --gold-border-strong: rgba(177, 161, 110, 0.4);
 
   /* Text */
-  --text-primary: #F8F8F8;
-  --text-secondary: #A1A1AA;
-  --text-tertiary: #71717A;
-  --text-disabled: #3F3F46;
+  --text-primary: #f5f0e6;
+  --text-secondary: #c0b7a8;
+  --text-tertiary: #8c8273;
+  --text-disabled: #4a443b;
 
   /* Semantic */
   --color-success: #00D26A;
@@ -136,11 +137,11 @@
   --border-medium: rgba(255, 255, 255, 0.15);
 
   /* Adaptive components */
-  --bg-sidebar: rgba(10, 10, 10, 0.45);
-  --bg-topbar: rgba(10, 10, 10, 0.45);
-  --bg-card-solid: rgba(10, 10, 10, 0.65);
-  --bg-card-hover-solid: rgba(16, 16, 16, 0.85);
-  --bg-footer: rgba(5, 5, 5, 0.25);
+  --bg-sidebar: rgba(20, 18, 17, 0.8);
+  --bg-topbar: rgba(13, 12, 11, 0.8);
+  --bg-card-solid: #141211;
+  --bg-card-hover-solid: #1d1a19;
+  --bg-footer: #0a0909;
 
   /* Shadows */
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
@@ -175,9 +176,9 @@ body {
 
 /* ── Typography ─────────────────────────────────────────── */
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-sans);
+  font-family: var(--font-serif);
   font-weight: 700;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.01em;
   line-height: 1.2;
   color: var(--text-primary);
 }
@@ -373,23 +374,24 @@ input, select, textarea { font-family: inherit; }
 }
 
 .btn-gold {
-  background: linear-gradient(135deg, var(--gold-primary) 0%, var(--gold-accent) 100%);
-  color: #050505;
-  box-shadow: 0 4px 16px var(--gold-glow);
+  background: linear-gradient(135deg, var(--gold-accent) 0%, var(--gold-dark) 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(131, 39, 41, 0.25);
 }
 
 .btn-gold::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold-primary) 100%);
+  background: linear-gradient(135deg, var(--gold-primary) 0%, var(--gold-accent) 100%);
   opacity: 0;
   transition: opacity var(--transition-base);
 }
 
 .btn-gold:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 32px var(--gold-glow-strong);
+  color: #ffffff;
+  box-shadow: 0 8px 24px rgba(131, 39, 41, 0.35);
 }
 
 .btn-gold:hover::after { opacity: 1; }
@@ -402,9 +404,9 @@ input, select, textarea { font-family: inherit; }
 }
 
 .btn-outline:hover {
-  border-color: var(--gold-primary);
-  color: var(--gold-primary);
-  background: var(--gold-subtle);
+  border-color: var(--gold-accent);
+  color: var(--gold-accent);
+  background: rgba(131, 39, 41, 0.04);
 }
 
 .btn-ghost {
