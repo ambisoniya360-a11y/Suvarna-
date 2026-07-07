@@ -430,6 +430,11 @@ export default function SuperAdminConsole() {
                         <div style={{ fontWeight: 500 }}>{shop.ownerName}</div>
                         <div style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>{shop.email}</div>
                         <div style={{ fontSize: '0.8125rem', color: 'var(--text-tertiary)' }}>{shop.mobile}</div>
+                        {shop.tempPassword && shop.tempPassword !== 'N/A' && (
+                          <div style={{ fontSize: '0.75rem', marginTop: '0.25rem', display: 'inline-block', background: 'rgba(212, 175, 55, 0.1)', border: '1px solid rgba(212, 175, 55, 0.2)', padding: '2px 6px', borderRadius: '4px', fontFamily: 'var(--font-mono)', color: 'var(--gold-light)' }}>
+                            Pass: {shop.tempPassword}
+                          </div>
+                        )}
                       </td>
                       <td>
                         <span className="badge badge-gold" style={{ fontWeight: 700 }}>

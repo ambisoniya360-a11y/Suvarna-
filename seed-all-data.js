@@ -56,7 +56,8 @@ async function seedData() {
     plan: 'Enterprise', // Enterprise supports multiple branches and staff
     subscription_start: new Date(Date.now() - 30 * 24 * 3600 * 1000).toISOString(),
     subscription_end: new Date(Date.now() + 335 * 24 * 3600 * 1000).toISOString(),
-    status: 'Active'
+    status: 'Active',
+    temp_password: ownerPassword
   }).select('id').single();
 
   if (shopErr) {

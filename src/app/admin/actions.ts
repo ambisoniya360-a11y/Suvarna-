@@ -36,6 +36,7 @@ export async function fetchActiveShops() {
       customersCount: 0,
       customersLimit: user.shops?.plan === 'Enterprise' ? 'Unlimited' : 2000,
       daysLeft,
+      tempPassword: user.shops?.temp_password || 'N/A',
       joinedDate: user.shops?.created_at 
         ? new Date(user.shops.created_at).toISOString().split('T')[0] 
         : new Date().toISOString().split('T')[0]
@@ -121,7 +122,8 @@ export async function approveRequestAction(reqId: string) {
         subscription_end: subscriptionEnd.toISOString(),
         status: 'Active',
         payment_method: 'Cash/Manual',
-        amount_paid: 0
+        amount_paid: 0,
+        temp_password: pass
       })
       .select()
       .single();
@@ -236,7 +238,8 @@ export async function createManualTenantAction(
         subscription_end: subscriptionEnd.toISOString(),
         status: 'Active',
         payment_method: 'Cash/Manual',
-        amount_paid: 0
+        amount_paid: 0,
+        temp_password: pass
       })
       .select()
       .single();
