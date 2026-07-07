@@ -26,7 +26,8 @@ export default async function DashboardLayout({
     .eq('id', user.id)
     .single();
 
-  const shop = profile?.shops && !Array.isArray(profile.shops) ? profile.shops : null;
+  const profileData = profile as any;
+  const shop = profileData?.shops && !Array.isArray(profileData.shops) ? profileData.shops : null;
   const shopName = shop?.shop_name || 'SuvarnaLoan';
 
   // Get current pathname from headers
