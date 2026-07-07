@@ -2,12 +2,23 @@
 
 import Link from 'next/link';
 
-const NAV_LINKS = ['Features', 'Workflow', 'Pricing', 'Testimonials'];
+const NAV_LINKS = ['Security', 'Workflow', 'Pricing', 'Testimonials'];
 
 export function HomeNavbar() {
   return (
     <nav className="home-navbar" id="home-nav">
-      <div className="home-navbar-brand">
+      <Link 
+        href="/" 
+        className="home-navbar-brand"
+        style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}
+        onClick={(e) => {
+          if (typeof window !== 'undefined' && window.location.pathname === '/') {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.history.pushState('', document.title, window.location.pathname);
+          }
+        }}
+      >
         <svg width="32" height="32" viewBox="0 0 36 36" fill="none">
           <polygon points="18,2 34,10 34,26 18,34 2,26 2,10" stroke="#D4AF37" strokeWidth="1.5" fill="rgba(212,175,55,0.08)" />
           <circle cx="18" cy="18" r="4" fill="#D4AF37" />
@@ -15,7 +26,7 @@ export function HomeNavbar() {
         <span className="home-navbar-logo">
           Suvarna<span style={{ color: 'var(--gold-primary)' }}>Loan</span>
         </span>
-      </div>
+      </Link>
 
       <div className="home-navbar-links desktop-nav">
         {NAV_LINKS.map((item) => (

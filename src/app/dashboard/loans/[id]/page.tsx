@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { ArrowLeft, Gem, User, Calendar, TrendingUp, CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
 import { formatCurrency, formatDate, getLoanStatusColor, getInitials } from '@/lib/utils';
 import RecordPaymentModal from './record-payment-modal';
+import InvoiceButton from './invoice-button';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -25,32 +26,54 @@ export default async function LoanDetailPage({ params }: PageProps) {
   const { data: profile } = await supabase.from('users').select('shop_id').eq('id', user.id).single();
   if (!profile?.shop_id) redirect('/dashboard');
 
-  const { data: loan, error } = await supabase
-    .from('loans')
-    .select(`
-      *,
-      customers(*),
-      gold_items(*),
-      payments(*)
-    `)
-    .eq('id', id)
-    .eq('shop_id', profile.shop_id)
-    .single();
+  const [loanRes, shopRes] = await Promise.all([
+    supabase
+      .from('loans')
+      .select(`
+        *,
+        customers(*),
+        gold_items(*),
+        payments(*)
+      `)
+      .eq('id', id)
+      .eq('shop_id', profile.shop_id)
+      .single(),
+    supabase
+      .from('shops')
+      .select('*')
+      .eq('id', profile.shop_id)
+      .single()
+  ]);
 
-  if (error || !loan) notFound();
+  const loan = loanRes.data;
+  const shop = shopRes.data;
+
+  if (loanRes.error || !loan) notFound();
 
   const customer = loan.customers as { full_name: string; mobile_number: string; photo_url?: string; address?: string } | null;
   const goldItem = loan.gold_items as { ornament_type: string; net_weight: number; purity: string; gross_weight: number; hallmark_number?: string; front_image_url?: string } | null;
   const payments = (loan.payments ?? []) as { id: string; amount: number; payment_type: string; payment_method: string; payment_date: string; receipt_number?: string }[];
 
   const totalPaid = payments.reduce((s, p) => s + p.amount, 0);
+  
+  // Calculate principal paid vs interest paid
+  const principalPaid = payments
+    .filter(p => p.payment_type === 'Partial Payment' || p.payment_type === 'Full Settlement')
+    .reduce((s, p) => s + p.amount, 0);
+  const interestPaid = payments
+    .filter(p => p.payment_type === 'Interest Payment')
+    .reduce((s, p) => s + p.amount, 0);
+
+  const remainingPrincipal = Math.max(0, loan.loan_amount - principalPaid);
   const monthsElapsed = calculateMonthsElapsed(loan.loan_date);
   const totalInterestDue = (loan.loan_amount * loan.interest_rate * Math.max(monthsElapsed, 1)) / 100;
+  const remainingInterest = Math.max(0, totalInterestDue - interestPaid);
+  const totalBalanceDue = remainingPrincipal + remainingInterest;
 
   return (
     <div className="dashboard-content">
       {/* Back */}
-      <Link href="/dashboard/loans" className="btn btn-ghost btn-sm" style={{ marginBottom: '1rem' }}>
+      <Link href="/dashboard/loans" className="btn btn-ghost btn-sm no-print" style={{ marginBottom: '1rem' }}>
         <ArrowLeft size={16} /> Back to Loans
       </Link>
 
@@ -65,14 +88,17 @@ export default async function LoanDetailPage({ params }: PageProps) {
           </div>
           <p className="page-subtitle">Created {formatDate(loan.loan_date)}</p>
         </div>
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+          <InvoiceButton loan={loan} shop={shop} />
           {loan.status === 'Active' && (
-            <RecordPaymentModal loanId={loan.id} loanNumber={loan.loan_number} />
+            <div className="no-print">
+              <RecordPaymentModal loanId={loan.id} loanNumber={loan.loan_number} />
+            </div>
           )}
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }} className="no-print">
 
         {/* Loan Summary */}
         <div className="card" style={{ padding: '1.75rem' }}>
@@ -85,7 +111,9 @@ export default async function LoanDetailPage({ params }: PageProps) {
               { label: 'Interest Rate', value: `${loan.interest_rate}% per month` },
               { label: 'Total Interest Due', value: formatCurrency(totalInterestDue) },
               { label: 'Total Paid', value: formatCurrency(totalPaid) },
-              { label: 'Balance Due', value: formatCurrency(Math.max(0, totalInterestDue - totalPaid)), highlight: true },
+              { label: 'Remaining Loan Amount', value: formatCurrency(remainingPrincipal), highlight: true },
+              { label: 'Remaining Interest Due', value: formatCurrency(remainingInterest) },
+              { label: 'Total Balance Due', value: formatCurrency(totalBalanceDue), highlight: true },
               { label: 'Loan Date', value: formatDate(loan.loan_date) },
               { label: 'Due Date', value: loan.due_date ? formatDate(loan.due_date) : '—' },
               { label: 'Scheme', value: loan.scheme_name ?? '—' },

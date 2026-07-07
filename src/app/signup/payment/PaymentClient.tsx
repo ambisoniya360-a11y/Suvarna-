@@ -208,8 +208,8 @@ export default function PaymentClient() {
 
   const pricing = getPlanPrice();
   const rawPrice = formData.plan === 'Enterprise' 
-    ? (formData.billingCycle === 'yearly' ? 249990 : 24999)
-    : (formData.billingCycle === 'yearly' ? 99990 : 9999);
+    ? (formData.billingCycle === 'yearly' ? 24999 : 2499)
+    : (formData.billingCycle === 'yearly' ? 9999 : 999);
   
   // Tax breakdown (GST 18%)
   const subtotal = rawPrice;

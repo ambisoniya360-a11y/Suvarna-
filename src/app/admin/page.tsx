@@ -383,8 +383,8 @@ export default function SuperAdminConsole() {
               <div className="form-group">
                 <select className="form-select" value={planFilter} onChange={e => setPlanFilter(e.target.value as any)}>
                   <option value="All">All Plans</option>
-                  <option value="Professional">Professional Plan (₹9,999)</option>
-                  <option value="Enterprise">Enterprise Plan (₹24,999)</option>
+                  <option value="Professional">Professional Plan (₹9,999/yr)</option>
+                  <option value="Enterprise">Enterprise Plan (₹24,999/yr)</option>
                 </select>
               </div>
 
@@ -437,7 +437,7 @@ export default function SuperAdminConsole() {
                           {shop.plan}
                         </span>
                         <div style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', marginTop: '0.25rem' }}>
-                          {shop.plan === 'Enterprise' ? '₹24,999 / month' : '₹9,999 / month'}
+                          {shop.plan === 'Enterprise' ? '₹24,999 / year' : '₹9,999 / year'}
                         </div>
                       </td>
                       <td>
@@ -549,7 +549,7 @@ export default function SuperAdminConsole() {
                     </td>
                     <td>
                       <span style={{ fontWeight: 700, color: 'var(--gold-primary)' }}>{req.plan}</span>
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>{req.plan === 'Enterprise' ? '₹24,999/mo' : '₹9,999/mo'}</div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>{req.plan === 'Enterprise' ? '₹24,999/yr' : '₹9,999/yr'}</div>
                     </td>
                     <td style={{ fontWeight: 600 }}>{req.days} Days</td>
                     <td style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>{req.requestedDate}</td>
@@ -655,8 +655,8 @@ export default function SuperAdminConsole() {
                       <div className="form-group">
                         <label className="form-label">Initial Subscription</label>
                         <select className="form-select" value={newPlan} onChange={e => setNewPlan(e.target.value as any)}>
-                          <option value="Professional">Professional (₹9,999)</option>
-                          <option value="Enterprise">Enterprise (₹24,999)</option>
+                          <option value="Professional">Professional (₹9,999/yr)</option>
+                          <option value="Enterprise">Enterprise (₹24,999/yr)</option>
                         </select>
                       </div>
 

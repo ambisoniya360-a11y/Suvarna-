@@ -230,8 +230,8 @@ CREATE POLICY "Shop users can access valuations" ON valuations
 -- ── Seed Default Pricing Plans ─────────────────────────────
 INSERT INTO pricing_plans (name, price_monthly, price_yearly, features, max_customers, max_branches, max_employees, is_popular) VALUES
   ('Starter', 999, 9990, '["200 customers","2 staff","1 branch","Basic loans","Payments","PDF receipts","Email support"]', 200, 1, 2, FALSE),
-  ('Professional', 2499, 24990, '["1000 customers","10 staff","3 branches","Full loans","WhatsApp alerts","Reports","Excel/PDF export","Priority support"]', 1000, 3, 10, TRUE),
-  ('Enterprise', 7999, 79990, '["Unlimited customers","Unlimited staff","Unlimited branches","Full ERP","Custom integrations","Dedicated manager","White-label","SLA"]', NULL, NULL, NULL, FALSE)
+  ('Professional', 9999, 99990, '["1000 customers","0 staff","Single branch","Full loans","WhatsApp alerts","Reports","Excel/PDF export","Priority support"]', 1000, 0, 0, TRUE),
+  ('Enterprise', 24999, 249990, '["Unlimited customers","10 staff","10 branches","Full ERP","Custom integrations","Dedicated manager","White-label","SLA"]', NULL, 10, 10, FALSE)
 ON CONFLICT DO NOTHING;
 
 -- ── Seed Default Testimonials ──────────────────────────────

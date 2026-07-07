@@ -30,6 +30,22 @@ export default function HeroScrollytelling() {
   const frameCount = 240;
   const frameObj = useRef({ frame: 1 });
 
+  const interactiveCanvasRef = useRef<HTMLCanvasElement>(null);
+  const mouseRef = useRef({ x: -1000, y: -1000, active: false });
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!stickyRef.current) return;
+    const rect = stickyRef.current.getBoundingClientRect();
+    mouseRef.current.x = e.clientX - rect.left;
+    mouseRef.current.y = e.clientY - rect.top;
+    mouseRef.current.active = true;
+  };
+
+  const handleMouseLeave = () => {
+    mouseRef.current.active = false;
+  };
+
+
   const currentFrame = (index: number) =>
     `/video-frames/frame_${String(index).padStart(3, '0')}.jpg`;
 
@@ -183,6 +199,165 @@ export default function HeroScrollytelling() {
     return () => ctx.revert();
   }, [isLoaded]);
 
+  // Handle hash navigation and scroll restoration on load/GSAP initialization
+  useEffect(() => {
+    if (!isLoaded) return;
+    if (typeof window === 'undefined') return;
+
+    // Refresh ScrollTrigger to calculate correct heights after layout shifts
+    ScrollTrigger.refresh();
+
+    // Check for initial hash navigation
+    const hash = window.location.hash;
+    if (hash) {
+      const id = hash.substring(1);
+      const element = document.getElementById(id);
+      if (element) {
+        // Use a short timeout to let the browser DOM render the pin spacer
+        const timer = setTimeout(() => {
+          element.scrollIntoView({ behavior: 'auto', block: 'start' });
+        }, 150);
+        return () => clearTimeout(timer);
+      }
+    } else {
+      // Force scroll to top on mount if there is no hash to prevent starting in the middle of scrollytelling
+      const timer = setTimeout(() => {
+        window.scrollTo(0, 0);
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoaded]);
+
+  // Interactive constellation/particles ledger effect
+  useEffect(() => {
+    const canvas = interactiveCanvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let animationFrameId: number;
+    let width = canvas.width = canvas.offsetWidth;
+    let height = canvas.height = canvas.offsetHeight;
+
+    const handleResize = () => {
+      if (!canvas) return;
+      width = canvas.width = canvas.offsetWidth;
+      height = canvas.height = canvas.offsetHeight;
+    };
+    window.addEventListener('resize', handleResize);
+
+    interface Particle {
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      radius: number;
+      alpha: number;
+    }
+
+    const numParticles = 75;
+    const particles: Particle[] = [];
+    for (let i = 0; i < numParticles; i++) {
+      particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.45,
+        vy: (Math.random() - 0.5) * 0.45,
+        radius: Math.random() * 1.5 + 0.8,
+        alpha: Math.random() * 0.35 + 0.15,
+      });
+    }
+
+    const render = () => {
+      ctx.clearRect(0, 0, width, height);
+
+      // Render mouse glow
+      if (mouseRef.current.active) {
+        const glowGradient = ctx.createRadialGradient(
+          mouseRef.current.x,
+          mouseRef.current.y,
+          0,
+          mouseRef.current.x,
+          mouseRef.current.y,
+          250
+        );
+        glowGradient.addColorStop(0, 'rgba(212, 175, 55, 0.08)');
+        glowGradient.addColorStop(0.5, 'rgba(212, 175, 55, 0.02)');
+        glowGradient.addColorStop(1, 'rgba(212, 175, 55, 0)');
+        ctx.fillStyle = glowGradient;
+        ctx.fillRect(0, 0, width, height);
+      }
+
+      particles.forEach((p) => {
+        // Move particle
+        p.x += p.vx;
+        p.y += p.vy;
+
+        // Bounce
+        if (p.x < 0 || p.x > width) p.vx *= -1;
+        if (p.y < 0 || p.y > height) p.vy *= -1;
+
+        // Draw particle dot
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(212, 175, 55, ${p.alpha})`;
+        ctx.fill();
+
+        // Attraction to mouse
+        if (mouseRef.current.active) {
+          const dx = mouseRef.current.x - p.x;
+          const dy = mouseRef.current.y - p.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 180) {
+            // Magnetic pull
+            p.x += (dx / dist) * 0.18;
+            p.y += (dy / dist) * 0.18;
+
+            // Draw line to mouse
+            const lineAlpha = (1 - dist / 180) * 0.22;
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(mouseRef.current.x, mouseRef.current.y);
+            ctx.strokeStyle = `rgba(245, 224, 124, ${lineAlpha})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      });
+
+      // Draw lines between particles
+      for (let i = 0; i < numParticles; i++) {
+        for (let j = i + 1; j < numParticles; j++) {
+          const pi = particles[i];
+          const pj = particles[j];
+          const dx = pi.x - pj.x;
+          const dy = pi.y - pj.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < 110) {
+            const lineAlpha = (1 - dist / 110) * 0.15 * Math.min(pi.alpha, pj.alpha);
+            ctx.beginPath();
+            ctx.moveTo(pi.x, pi.y);
+            ctx.lineTo(pj.x, pj.y);
+            ctx.strokeStyle = `rgba(212, 175, 55, ${lineAlpha})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      }
+
+      animationFrameId = requestAnimationFrame(render);
+    };
+
+    render();
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+
   return (
     <>
       {/* ─── LOADING OVERLAY ────────────────────────── */}
@@ -289,6 +464,8 @@ export default function HeroScrollytelling() {
         <div 
           ref={stickyRef} 
           className="hero-sticky"
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
           style={{
             position: 'relative',
             width: '100%',
@@ -336,6 +513,20 @@ export default function HeroScrollytelling() {
             ))}
           </div>
 
+          {/* Interactive Digital Ledger Mesh Canvas */}
+          <canvas
+            ref={interactiveCanvasRef}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              zIndex: 4,
+              pointerEvents: 'none',
+            }}
+          />
+
+
           {/* Scroll frames (Text Content Layers) */}
           {SCROLL_FRAMES.map((frame, i) => (
             <div
@@ -377,8 +568,12 @@ export default function HeroScrollytelling() {
                   letterSpacing: '-0.04em',
                   lineHeight: 0.95,
                   marginBottom: '1.25rem',
-                  color: 'var(--gold-primary)',
-                  textShadow: '0 4px 24px rgba(0, 0, 0, 0.6), 0 8px 48px rgba(0, 0, 0, 0.4)',
+                  background: 'linear-gradient(135deg, #FFF5C2 0%, #E6C24A 30%, #C59A2C 60%, #856110 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  display: 'block',
+                  paddingBottom: '0.05em',
+                  filter: 'drop-shadow(0 4px 20px rgba(0, 0, 0, 0.7))',
                 }}>
                   {frame.title}
                 </h1>
@@ -411,8 +606,8 @@ export default function HeroScrollytelling() {
                     <Link href="/login" className="btn btn-gold btn-xl" id="hero-cta-demo">
                       <span>Book Free Demo</span>
                     </Link>
-                    <a href="#features" className="btn btn-outline btn-xl" id="hero-cta-features">
-                      Explore Features
+                    <a href="#security" className="btn btn-outline btn-xl" id="hero-cta-features">
+                      Explore Security
                     </a>
                   </div>
                 )}

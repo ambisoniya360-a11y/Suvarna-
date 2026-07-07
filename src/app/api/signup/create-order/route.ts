@@ -4,8 +4,8 @@ const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID;
 const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET;
 
 const PLAN_PRICES: Record<string, { monthly: number; yearly: number }> = {
-  Professional: { monthly: 999900, yearly: 9999000 }, // in paise
-  Enterprise: { monthly: 2499900, yearly: 24999000 },
+  Professional: { monthly: 99900, yearly: 999900 }, // in paise
+  Enterprise: { monthly: 249900, yearly: 2499900 },
 };
 
 export async function POST(request: NextRequest) {

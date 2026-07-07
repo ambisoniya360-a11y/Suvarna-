@@ -101,8 +101,8 @@ export default function RootLayout({
               offers: {
                 '@type': 'AggregateOffer',
                 priceCurrency: 'INR',
-                lowPrice: '999',
-                highPrice: '9999',
+                lowPrice: '9999',
+                highPrice: '24999',
               },
             }),
           }}

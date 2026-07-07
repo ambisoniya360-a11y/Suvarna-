@@ -3,36 +3,14 @@ import Link from 'next/link';
 import { ArrowRight, CheckCircle, Shield, BarChart3, Users, Gem, Scale, CreditCard, Phone, FileText, GitBranch, UserCheck, Bell, Star } from 'lucide-react';
 import HeroScrollytelling from '@/components/home/HeroScrollytelling';
 import { HomeNavbar, HomeFooter } from '@/components/home/HomeNav';
+import DiaryVsDigital from '@/components/home/DiaryVsDigital';
+import SecurityVaultIntelligence from '@/components/home/SecurityVaultIntelligence';
+import GoldToGrowthWorkflow from '@/components/home/GoldToGrowthWorkflow';
 
 export const metadata: Metadata = {
   title: 'SuvarnaLoan ERP — Transforming Gold Into Trust',
   description: 'Premium gold loan ERP software for jewelers, pawnbrokers, and NBFCs. Manage customers, loans, gold valuations, payments, and reports — all in one platform.',
 };
-
-const FEATURES = [
-  { icon: Users, title: 'Customer Management', desc: 'Full KYC, photo upload, Aadhaar/PAN verification with document storage.' },
-  { icon: Gem, title: 'Gold Loan Management', desc: 'End-to-end loan lifecycle from creation to closure with full audit trail.' },
-  { icon: Scale, title: 'Gold Valuation', desc: 'Real-time calculator with live market rates, purity detection, and hallmark verification.' },
-  { icon: BarChart3, title: 'Interest Calculation', desc: 'Automated monthly interest with EMI schedules and due date tracking.' },
-  { icon: CreditCard, title: 'Payment Tracking', desc: 'Record payments, generate receipts, and track payment history per loan.' },
-  { icon: Bell, title: 'WhatsApp & SMS Alerts', desc: 'Automated reminders for overdue loans and payment due dates.' },
-  { icon: FileText, title: 'Reports & Analytics', desc: 'Portfolio analytics with PDF/Excel export for loan, payment, and customer reports.' },
-  { icon: GitBranch, title: 'Branch Management', desc: 'Multi-branch support with branch-wise performance tracking.' },
-  { icon: UserCheck, title: 'Staff Roles', desc: 'Role-based access: Super Admin, Branch Admin, Staff, and Viewer.' },
-  { icon: Shield, title: 'Document Storage', desc: 'Secure cloud storage for all KYC documents with encrypted access.' },
-  { icon: Phone, title: 'Mobile Responsive', desc: 'Access from any device — desktop, tablet, or smartphone.' },
-  { icon: CheckCircle, title: 'Auction Workflow', desc: 'Manage overdue loans through an end-to-end auction workflow.' },
-];
-
-const WORKFLOW = [
-  { step: 1, title: 'Customer Arrives', desc: 'Record customer details, complete KYC, and upload documents.' },
-  { step: 2, title: 'Gold Valuation', desc: 'Weigh jewelry, assess purity, scan hallmarks, and calculate value.' },
-  { step: 3, title: 'Loan Sanction', desc: 'Generate loan agreement, decide interest rate, and disburse amount.' },
-  { step: 4, title: 'Interest Tracking', desc: 'Automated monthly interest calculation and payment reminders.' },
-  { step: 5, title: 'Payment Collection', desc: 'Record payments, generate receipts, and update loan status.' },
-  { step: 6, title: 'Loan Closure', desc: 'Return gold on full settlement and close the loan automatically.' },
-  { step: 7, title: 'Business Reporting', desc: 'Generate portfolio reports, analytics, and export data.' },
-];
 
 const TESTIMONIALS = [
   {
@@ -61,13 +39,13 @@ const TESTIMONIALS = [
 const PRICING = [
   {
     name: 'Professional',
-    price: 9999,
-    yearlyPrice: 99990,
+    price: 999,
+    yearlyPrice: 9999,
     description: 'For growing and established gold loan businesses',
     features: [
       'Up to 2,000 customers',
-      'Up to 15 staff members',
-      'Up to 5 branches',
+      'Single user login (No staff accounts)',
+      'Single branch store only',
       'Full gold loan lifecycle management',
       'Automated WhatsApp & SMS alerts',
       'Advanced ledger & reports',
@@ -78,13 +56,13 @@ const PRICING = [
   },
   {
     name: 'Enterprise',
-    price: 24999,
-    yearlyPrice: 249990,
+    price: 2499,
+    yearlyPrice: 24999,
     description: 'For NBFCs and multi-branch operations',
     features: [
       'Unlimited customers',
-      'Unlimited staff members',
-      'Unlimited branches',
+      'Up to 10 staff members',
+      'Up to 10 branches',
       'Full premium ERP suite',
       'Custom integrations & API access',
       'Dedicated account manager',
@@ -95,11 +73,7 @@ const PRICING = [
   },
 ];
 
-const TRUSTED_BY = [
-  'Tanishq Partner Stores', 'Malabar Gold', 'Kalyan Jewellers',
-  'IIFL Gold Loans', 'Manappuram Finance', 'Rupeek Gold',
-  'SBI Gold Loan DSA', 'IndusInd Gold Finance', 'Federal Bank Gold',
-];
+
 
 export default function HomePage() {
   return (
@@ -112,115 +86,16 @@ export default function HomePage() {
       {/* ─── HERO SCROLLYTELLING ──────────────────── */}
       <HeroScrollytelling />
 
-      {/* ─── TRUSTED BY ─────────────────────────── */}
-      <section id="trusted" style={{ padding: '5rem 2rem', borderTop: '1px solid var(--border-subtle)' }}>
-        <p style={{
-          textAlign: 'center',
-          fontSize: '0.75rem',
-          color: 'var(--text-tertiary)',
-          letterSpacing: '0.15em',
-          textTransform: 'uppercase',
-          marginBottom: '2.5rem',
-        }}>
-          Trusted by leading gold finance businesses across India
-        </p>
-        <div className="marquee-container">
-          <div className="marquee-track">
-            {[...TRUSTED_BY, ...TRUSTED_BY].map((company, i) => (
-              <div
-                key={i}
-                style={{
-                  flexShrink: 0,
-                  padding: '0.75rem 2rem',
-                  background: 'var(--bg-card)',
-                  border: '1px solid var(--border-subtle)',
-                  borderRadius: 'var(--radius-full)',
-                  fontSize: '0.875rem',
-                  color: 'var(--text-secondary)',
-                  whiteSpace: 'nowrap',
-                  fontWeight: 500,
-                }}
-              >
-                {company}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* ─── TRADITIONAL VS DIGITAL CONVERSION SECTION ─── */}
+      <DiaryVsDigital />
 
-      {/* ─── FEATURES GRID ──────────────────────── */}
-      <section id="features" style={{ padding: '6rem 2rem', maxWidth: '1200px', margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'var(--gold-subtle)', border: '1px solid var(--gold-border)', borderRadius: '100px', padding: '0.375rem 1rem', marginBottom: '1.5rem' }}>
-            <span style={{ fontSize: '0.75rem', color: 'var(--gold-primary)', letterSpacing: '0.1em', fontWeight: 600, textTransform: 'uppercase' }}>
-              All-in-one Platform
-            </span>
-          </div>
-          <h2 style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 900, letterSpacing: '-0.04em', marginBottom: '1rem' }}>
-            Everything Your Gold Loan
-            <br />
-            <span className="text-gradient-gold">Business Needs.</span>
-          </h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '1.125rem', maxWidth: '520px', margin: '0 auto' }}>
-            12 powerful modules. One beautiful platform. Built for jewelers, pawnbrokers, and NBFCs.
-          </p>
-        </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem' }}>
-          {FEATURES.map(({ icon: Icon, title, desc }, i) => (
-            <div key={title} className="feature-card">
-              <div style={{
-                width: 48, height: 48,
-                borderRadius: 'var(--radius-md)',
-                background: 'var(--gold-subtle)',
-                border: '1px solid var(--gold-border)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                marginBottom: '1.25rem',
-                position: 'relative', zIndex: 1,
-              }}>
-                <Icon size={22} style={{ color: 'var(--gold-primary)' }} />
-              </div>
-              <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.625rem', position: 'relative', zIndex: 1 }}>
-                {title}
-              </h3>
-              <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', lineHeight: 1.6, position: 'relative', zIndex: 1 }}>
-                {desc}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
 
-      {/* ─── WORKFLOW ────────────────────────────── */}
-      <section id="workflow" style={{ padding: '6rem 2rem', background: 'var(--bg-secondary)', borderTop: '1px solid var(--border-subtle)' }}>
-        <div className="workflow-grid-container">
-          {/* Sticky side heading */}
-          <div className="workflow-sticky-panel">
-            <h2>
-              From Gold to <span className="text-gradient-gold">Growth.</span>
-            </h2>
-            <p>
-              The complete gold loan journey — digitized, automated, and tracked from start to finish.
-            </p>
-            <div className="workflow-sticky-accent" />
-          </div>
+      {/* ─── SECURITY & VAULT INTELLIGENCE ──────── */}
+      <SecurityVaultIntelligence />
 
-          {/* Step cards */}
-          <div className="workflow-timeline-list">
-            {WORKFLOW.map((item) => (
-              <div key={item.step} className="workflow-step-card">
-                <div className="workflow-step-badge">
-                  {String(item.step).padStart(2, '0')}
-                </div>
-                <div className="workflow-step-body">
-                  <h3>{item.title}</h3>
-                  <p>{item.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* ─── SCROLLYTELLING WORKFLOW ─────────────── */}
+      <GoldToGrowthWorkflow />
 
       {/* ─── TESTIMONIALS ───────────────────────── */}
       <section id="testimonials" style={{ padding: '6rem 2rem' }}>

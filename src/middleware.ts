@@ -7,7 +7,17 @@ const isSupabaseConfigured =
   !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('placeholder');
 
 export async function middleware(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request });
+  const { pathname } = request.nextUrl;
+  
+  // Inject x-pathname header to let server layouts/components access it
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set('x-pathname', pathname);
+
+  let supabaseResponse = NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
 
   // If Supabase is not configured, skip all auth checks (local dev mode)
   if (!isSupabaseConfigured) {
@@ -26,7 +36,11 @@ export async function middleware(request: NextRequest) {
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
           );
-          supabaseResponse = NextResponse.next({ request });
+          supabaseResponse = NextResponse.next({
+            request: {
+              headers: requestHeaders,
+            },
+          });
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options)
           );
@@ -39,8 +53,6 @@ export async function middleware(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
-  const { pathname } = request.nextUrl;
 
   // Public routes (no auth required)
   const publicRoutes = ['/', '/login', '/pricing', '/features'];

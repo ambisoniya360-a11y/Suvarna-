@@ -45,8 +45,8 @@ const DEFAULT_FORM_DATA: SignupFormData = {
 };
 
 const PLAN_PRICES = {
-  Professional: { monthly: 9999, yearly: 99990 },
-  Enterprise: { monthly: 24999, yearly: 249990 },
+  Professional: { monthly: 999, yearly: 9999 },
+  Enterprise: { monthly: 2499, yearly: 24999 },
 } as const;
 
 export const useSignupStore = create<SignupStore>((set, get) => ({

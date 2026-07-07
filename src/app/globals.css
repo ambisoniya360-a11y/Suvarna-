@@ -1888,3 +1888,262 @@ input, select, textarea { font-family: inherit; }
   background-position: center;
   opacity: 0.6;
 }
+
+/* ── Interactive Reporting Animations & Styling ── */
+.workflow-step-card-special {
+  border-color: rgba(212, 175, 55, 0.15) !important;
+  background: rgba(15, 15, 15, 0.75) !important;
+  box-shadow: 
+    0 15px 45px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03),
+    0 0 30px rgba(212, 175, 55, 0.03) !important;
+}
+
+.workflow-step-card-special:hover {
+  border-color: rgba(212, 175, 55, 0.4) !important;
+  background: rgba(18, 18, 18, 0.85) !important;
+  box-shadow: 
+    0 20px 50px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 0 40px rgba(212, 175, 55, 0.08) !important;
+}
+
+.workflow-step-badge-special {
+  background: rgba(212, 175, 55, 0.12) !important;
+  border-color: rgba(212, 175, 55, 0.4) !important;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.15) !important;
+}
+
+.workflow-step-card-special:hover .workflow-step-badge-special {
+  background: var(--gold-primary) !important;
+  color: #050505 !important;
+  border-color: var(--gold-primary) !important;
+  box-shadow: 0 0 25px rgba(212, 175, 55, 0.5) !important;
+}
+
+.bar-val-label {
+  opacity: 0.7;
+  transform: translateY(0);
+  transition: all 0.25s ease;
+}
+
+div:hover > .bar-val-label {
+  opacity: 1;
+  transform: translateY(-2px);
+  color: #ffffff !important;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+/* ── Diary vs Digital Section ── */
+@media (min-width: 1024px) {
+  .desktop-grid-columns {
+    grid-template-columns: 1fr 90px 1fr !important;
+    gap: 1.5rem !important;
+  }
+}
+
+@media (max-width: 1023px) {
+  .vs-divider-container {
+    margin: 1.5rem 0 !important;
+    transform: rotate(90deg) !important;
+    align-self: center !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .cta-banner-container {
+    flex-direction: column !important;
+    text-align: center !important;
+    padding: 3rem 2.5rem !important;
+  }
+  .cta-right-buttons {
+    justify-content: center !important;
+    width: 100% !important;
+  }
+  .decor-jewelry {
+    display: none !important;
+  }
+}
+
+.hover-card-diary:hover {
+  transform: translateY(-5px);
+  border-color: rgba(255, 77, 79, 0.35) !important;
+  box-shadow: 0 15px 40px rgba(255, 77, 79, 0.05), 0 10px 30px rgba(0,0,0,0.45) !important;
+}
+
+.hover-card-erp:hover {
+  transform: translateY(-5px);
+  border-color: rgba(16, 185, 129, 0.45) !important;
+  box-shadow: 0 15px 40px rgba(16, 185, 129, 0.08), 0 15px 45px rgba(0,0,0,0.45) !important;
+}
+
+@media (max-width: 640px) {
+  .tablet-hide {
+    display: none !important;
+  }
+}
+
+/* ── Sticky Navbar Scroll Offset ── */
+#hero, #features, #workflow, #pricing, #testimonials, #security-core {
+  scroll-margin-top: 72px;
+}
+
+/* ── Security & Vault Intelligence Component Styles ── */
+.pulse-green-dot {
+  animation: pulse-green-glow 2s infinite ease-in-out;
+}
+
+@keyframes pulse-green-glow {
+  0%, 100% {
+    box-shadow: 0 0 4px #00D26A;
+    opacity: 0.8;
+  }
+  50% {
+    box-shadow: 0 0 14px #00D26A;
+    opacity: 1;
+  }
+}
+
+/* Hide horizontal scrollbar in steps grid */
+#security-steps-grid::-webkit-scrollbar {
+  display: none;
+}
+#security-steps-grid {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Steps hovering */
+.security-step-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(212, 175, 55, 0.3) !important;
+  background: rgba(212, 175, 55, 0.02) !important;
+}
+
+.security-step-card:hover .security-step-icon {
+  color: var(--gold-primary) !important;
+  border-color: var(--gold-border-strong) !important;
+  background: rgba(212, 175, 55, 0.06) !important;
+}
+
+/* Metric tiles hover */
+.dashboard-metric-tile {
+  transition: all 0.3s ease;
+}
+.dashboard-metric-tile:hover {
+  border-color: rgba(212, 175, 55, 0.15) !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+/* Quick Actions hover */
+.quick-action-row {
+  transition: all 0.2s ease;
+}
+.quick-action-row:hover:not(:disabled) {
+  background: rgba(212, 175, 55, 0.03) !important;
+  border-color: rgba(212, 175, 55, 0.2) !important;
+  color: var(--gold-primary) !important;
+}
+.quick-action-row:hover:not(:disabled) .chevron-icon {
+  transform: translateX(3px);
+  color: var(--gold-primary) !important;
+}
+
+/* Stacked trust cards hover */
+.stacked-trust-card {
+  transition: all 0.3s ease;
+}
+.stacked-trust-card:hover {
+  border-color: rgba(212, 175, 55, 0.15) !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  transform: translateY(-2px);
+}
+
+/* Workspace Grid Responsiveness */
+@media (max-width: 1024px) {
+  #security-workspace-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+@media (max-width: 768px) {
+  #security-workspace-grid {
+    grid-template-columns: 1fr !important;
+  }
+  #security-steps-grid {
+    display: flex !important;
+    gap: 0.75rem !important;
+  }
+  .gold-bars-decor-desktop {
+    display: none !important;
+  }
+}
+
+/* ── Scrollytelling Workflow styles ── */
+.animate-fade-in {
+  animation: fade-in-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.scrolly-trigger-block {
+  transition: all 0.3s ease;
+}
+
+.scrolly-trigger-block:hover .scrolly-node {
+  border-color: var(--gold-primary) !important;
+  box-shadow: 0 0 10px var(--gold-glow);
+}
+
+.workflow-trust-badge {
+  transition: all 0.3s ease;
+}
+.workflow-trust-badge:hover {
+  border-color: rgba(212, 175, 55, 0.25) !important;
+  background: rgba(212, 175, 55, 0.01) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.mock-sidenav div {
+  transition: all 0.2s ease;
+}
+.mock-sidenav div:hover {
+  color: var(--gold-primary) !important;
+  background: rgba(212,175,55,0.02) !important;
+}

@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import crypto from 'crypto';
+import { cookies } from 'next/headers';
+
+const isPlaceholder = process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('placeholder');
 
 const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET;
 
@@ -86,10 +89,27 @@ export async function POST(request: NextRequest) {
       subscriptionEnd.setMonth(subscriptionEnd.getMonth() + 1);
     }
 
+    if (isPlaceholder) {
+      const cookieStore = await cookies();
+      const role = email.includes('admin') ? 'Super Admin' : 'Shop Owner';
+      cookieStore.set('sb-mock-email', email, { path: '/' });
+      cookieStore.set('sb-mock-role', role, { path: '/' });
+
+      return NextResponse.json({
+        success: true,
+        credentials: {
+          email,
+          shopName,
+          plan,
+          subscriptionEnd: subscriptionEnd.toISOString(),
+        },
+      });
+    }
+
     // Calculate amount paid (in rupees)
     const PLAN_PRICES: Record<string, { monthly: number; yearly: number }> = {
-      Professional: { monthly: 9999, yearly: 99990 },
-      Enterprise: { monthly: 24999, yearly: 249990 },
+      Professional: { monthly: 999, yearly: 9999 },
+      Enterprise: { monthly: 2499, yearly: 24999 },
     };
     const cycle = billingCycle === 'yearly' ? 'yearly' : 'monthly';
     const amountPaid = PLAN_PRICES[plan]?.[cycle] || 0;

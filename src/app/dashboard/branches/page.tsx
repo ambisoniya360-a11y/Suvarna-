@@ -12,6 +12,45 @@ export default async function BranchesPage() {
   const { data: profile } = await supabase.from('users').select('shop_id').eq('id', user.id).single();
   if (!profile?.shop_id) redirect('/dashboard');
 
+  const { data: shop } = await supabase.from('shops').select('plan').eq('id', profile.shop_id).single();
+  const shopPlan = shop?.plan || 'Professional';
+
+  if (shopPlan === 'Professional') {
+    return (
+      <div className="dashboard-content animate-fade-in" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'calc(100vh - 240px)' }}>
+        <div className="card" style={{
+          maxWidth: '500px', width: '100%', padding: '3.5rem 2.5rem', textAlign: 'center',
+          border: '1px solid var(--gold-border)', boxShadow: '0 12px 48px rgba(212, 175, 55, 0.08)',
+          background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.03), transparent)'
+        }}>
+          <div style={{
+            width: 64, height: 64, borderRadius: '50%', background: 'var(--gold-subtle)',
+            border: '1px solid var(--gold-border)', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', margin: '0 auto 1.5rem', color: 'var(--gold-primary)'
+          }}>
+            <GitBranch size={28} />
+          </div>
+          
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.75rem', letterSpacing: '-0.02em' }}>
+            Multi-Branch Management Locked
+          </h2>
+          
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', lineHeight: 1.6, marginBottom: '2rem' }}>
+            Your active <strong>Professional</strong> plan does not support multiple branch locations. Upgrade to the <strong>Enterprise Plan</strong> to manage up to 10 branch channels and coordinate inventory.
+          </p>
+
+          <a 
+            href="/dashboard/settings?tab=billing" 
+            className="btn btn-gold btn-lg"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', justifyContent: 'center', width: '100%' }}
+          >
+            <span>Upgrade Subscription</span>
+          </a>
+        </div>
+      </div>
+    );
+  }
+
   const { data: branches, count } = await supabase
     .from('branches')
     .select('*', { count: 'exact' })
