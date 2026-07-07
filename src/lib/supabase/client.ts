@@ -1,6 +1,6 @@
 import { createBrowserClient } from '@supabase/ssr';
 
-const isPlaceholder = process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('placeholder');
+const isPlaceholder = !process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL.includes('placeholder');
 
 export function createClient() {
   if (isPlaceholder) {

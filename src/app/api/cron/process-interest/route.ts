@@ -2,12 +2,19 @@ import { NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
 
 // We use the Service Role Key here because cron jobs run outside user sessions
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+let supabaseInstance: any = null;
+function getSupabase() {
+  if (!supabaseInstance) {
+    supabaseInstance = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co",
+      process.env.SUPABASE_SERVICE_ROLE_KEY || "placeholder-key"
+    );
+  }
+  return supabaseInstance;
+}
 
 export async function GET(request: Request) {
+  const supabase = getSupabase()
   // Simple authentication for cron (e.g., passing a secret token)
   const authHeader = request.headers.get('authorization')
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
