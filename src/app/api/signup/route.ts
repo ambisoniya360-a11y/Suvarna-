@@ -3,8 +3,6 @@ import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import crypto from 'crypto';
 import { cookies } from 'next/headers';
 
-const isPlaceholder = process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('placeholder');
-
 const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET;
 
 // Admin client for user creation (bypasses RLS)
@@ -89,22 +87,7 @@ export async function POST(request: NextRequest) {
       subscriptionEnd.setMonth(subscriptionEnd.getMonth() + 1);
     }
 
-    if (isPlaceholder) {
-      const cookieStore = await cookies();
-      const role = email.includes('admin') ? 'Super Admin' : 'Shop Owner';
-      cookieStore.set('sb-mock-email', email, { path: '/' });
-      cookieStore.set('sb-mock-role', role, { path: '/' });
 
-      return NextResponse.json({
-        success: true,
-        credentials: {
-          email,
-          shopName,
-          plan,
-          subscriptionEnd: subscriptionEnd.toISOString(),
-        },
-      });
-    }
 
     // Calculate amount paid (in rupees)
     const PLAN_PRICES: Record<string, { monthly: number; yearly: number }> = {
